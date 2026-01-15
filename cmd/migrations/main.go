@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"palladium-intelligence/go-migrations/internal/creator/fs"
+	"palladium-intelligence/go-migrations/internal/cli"
 )
 
 func main() {
@@ -16,27 +16,21 @@ func main() {
 	action := os.Args[1]
 	args := os.Args[2:]
 
+	var cmd cli.Command
 	switch action {
 	case "create":
-		handleCreateMigration(args)
+		cmd = cli.NewCreateMigrationCommand()
+	case "migrate":
+		cmd = cli.NewMigrateCommand()
 	default:
 		fmt.Printf("Unknown action: %s\n", action)
+		os.Exit(1)
 	}
-}
 
-func handleCreateMigration(args []string) {
-	if len(args) < 2 {
-		fmt.Println("Usage: ./migration create [path] [migration-name]")
-		return
+	if err := cmd.Execute(context.Background(), args); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	path := args[0]
-	name := args[1]
-	fmt.Printf("Creating new migration in: %s\n", path)
 
-	migrationFiles, err := fs.NewCreator(path).Create(context.Background(), name)
-	if err != nil {
-		fmt.Printf("Error creating migration file: %v\n", err)
-		return
-	}
-	fmt.Printf("Migration file created:\n- %s\n- %s\n", migrationFiles.Up, migrationFiles.Down)
+	os.Exit(0)
 }
