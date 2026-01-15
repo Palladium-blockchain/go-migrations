@@ -86,7 +86,8 @@ go build -o migration ./cmd/migrations
 ### Создание миграции
 
 ```bash
-./migration create migrations add_users_table
+MIGRATIONS_PATH="migrations" \
+./migration create add_users_table
 ```
 
 Команда создаст пару файлов:
