@@ -28,7 +28,7 @@ func (cmd *MigrateCommand) Execute(ctx context.Context, _ []string) error {
 	}
 
 	// Driver
-	db, err := sql.Open("postgres", env.DatabaseURL)
+	db, err := sql.Open("pgx", env.DatabaseURL)
 	if err != nil {
 		fmt.Println("Database error:", err)
 		return err
