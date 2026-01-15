@@ -27,7 +27,7 @@ func (d *Driver) Initialize(ctx context.Context) error {
 	const q = `
 	CREATE TABLE IF NOT EXISTS schema_migrations (
     	version TEXT NOT NULL,
-    	applied_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    	applied_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 	)
 	`
 
