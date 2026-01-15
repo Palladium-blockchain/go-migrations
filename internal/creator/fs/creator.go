@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"palladium-intelligence/go-migrations/pkg/migrate"
 	"path/filepath"
 	"time"
+
+	"github.com/Palladium-blockchain/go-migrations/pkg/migrate"
 )
 
 type Creator struct {

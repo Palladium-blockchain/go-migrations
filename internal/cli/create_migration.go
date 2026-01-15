@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"palladium-intelligence/go-migrations/internal/creator/fs"
+
+	"github.com/Palladium-blockchain/go-migrations/internal/creator/fs"
 )
 
 type CreateMigrationCommand struct{}

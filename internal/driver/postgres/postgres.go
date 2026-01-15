@@ -5,7 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"palladium-intelligence/go-migrations/pkg/migrate"
+
+	"github.com/Palladium-blockchain/go-migrations/pkg/migrate"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )

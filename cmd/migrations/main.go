@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"palladium-intelligence/go-migrations/internal/cli"
+
+	"github.com/Palladium-blockchain/go-migrations/internal/cli"
 )
 
 func main() {

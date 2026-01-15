@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	"palladium-intelligence/go-migrations/pkg/migrate"
 	"sort"
 	"strings"
+
+	"github.com/Palladium-blockchain/go-migrations/pkg/migrate"
 )
 
 type Source struct {

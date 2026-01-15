@@ -3,7 +3,8 @@ package migrator
 import (
 	"context"
 	"fmt"
-	"palladium-intelligence/go-migrations/pkg/migrate"
+
+	"github.com/Palladium-blockchain/go-migrations/pkg/migrate"
 )
 
 type Migrator struct {

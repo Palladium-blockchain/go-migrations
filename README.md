@@ -12,7 +12,7 @@
 ## Установка
 
 ```bash
-go get palladium-intelligence/go-migrations
+go get github.com/Palladium-blockchain/go-migrations
 ```
 
 ## Формат миграций
@@ -41,9 +41,9 @@ import (
     "database/sql"
     "os"
 
-    "palladium-intelligence/go-migrations/internal/driver/postgres"
-    "palladium-intelligence/go-migrations/internal/migrator"
-    "palladium-intelligence/go-migrations/internal/source/fs"
+    "github.com/Palladium-blockchain/go-migrations/internal/driver/postgres"
+    "github.com/Palladium-blockchain/go-migrations/internal/migrator"
+    "github.com/Palladium-blockchain/go-migrations/internal/source/fs"
 
     _ "github.com/jackc/pgx/v5/stdlib"
 )
