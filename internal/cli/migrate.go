@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Palladium-blockchain/go-migrations/internal/driver/postgres"
-	"github.com/Palladium-blockchain/go-migrations/internal/migrator"
-	"github.com/Palladium-blockchain/go-migrations/internal/source/fs"
+	migratepostgres "github.com/Palladium-blockchain/go-migrations/pkg/driver/postgres"
+	"github.com/Palladium-blockchain/go-migrations/pkg/migrator"
+	migratefs "github.com/Palladium-blockchain/go-migrations/pkg/source/fs"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -34,10 +34,10 @@ func (cmd *MigrateCommand) Execute(ctx context.Context, _ []string) error {
 		return err
 	}
 	defer func() { _ = db.Close() }()
-	driver := postgres.NewDriver(db)
+	driver := migratepostgres.NewDriver(db)
 
 	// Source
-	source := fs.NewSource(os.DirFS(env.MigrationsPath))
+	source := migratefs.NewSource(os.DirFS(env.MigrationsPath))
 
 	// Migrator
 	if err := migrator.NewMigrator(driver, source).Up(ctx); err != nil {

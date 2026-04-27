@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Palladium-blockchain/go-migrations/internal/creator/fs"
+	migratefs "github.com/Palladium-blockchain/go-migrations/pkg/creator/fs"
 )
 
 type CreateMigrationCommand struct{}
@@ -30,7 +30,7 @@ func (cmd *CreateMigrationCommand) Execute(ctx context.Context, args []string) e
 
 	fmt.Printf("Creating new migration in: %s\n", env.MigrationsPath)
 
-	migrationFiles, err := fs.NewCreator(env.MigrationsPath).Create(ctx, name)
+	migrationFiles, err := migratefs.NewCreator(env.MigrationsPath).Create(ctx, name)
 	if err != nil {
 		fmt.Printf("Error creating migration file: %v\n", err)
 		return errors.New("error creating migration file")

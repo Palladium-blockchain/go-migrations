@@ -41,22 +41,22 @@ import (
     "database/sql"
     "os"
 
-    "github.com/Palladium-blockchain/go-migrations/internal/driver/postgres"
-    "github.com/Palladium-blockchain/go-migrations/internal/migrator"
-    "github.com/Palladium-blockchain/go-migrations/internal/source/fs"
+    migratepostgres "github.com/Palladium-blockchain/go-migrations/pkg/driver/postgres"
+    "github.com/Palladium-blockchain/go-migrations/pkg/migrator"
+    migratefs "github.com/Palladium-blockchain/go-migrations/pkg/source/fs"
 
     _ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
-    db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
     if err != nil {
         panic(err)
     }
     defer db.Close()
 
-    driver := postgres.NewDriver(db)
-    source := fs.NewSource(os.DirFS("migrations"))
+    driver := migratepostgres.NewDriver(db)
+    source := migratefs.NewSource(os.DirFS("migrations"))
 
     if err := migrator.NewMigrator(driver, source).Up(context.Background()); err != nil {
         panic(err)
