@@ -96,6 +96,17 @@ if err := migrator.NewMigrator(driver, source).Down(ctx); err != nil {
 go build -o migration ./cmd/migrations
 ```
 
+### Версия CLI
+
+```bash
+./migration -v
+./migration --version
+```
+
+Команда выведет версию собранного бинаря. Для релизной установки через
+`go install ...@vX.Y.Z` это будет версия модуля, а для локальной сборки обычно
+`(devel)`.
+
 ### Создание миграции
 
 ```bash

@@ -3,19 +3,30 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
+	"runtime/debug"
 
 	"github.com/Palladium-blockchain/go-migrations/internal/cli"
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: ./migration [action] {...args}")
-		os.Exit(1)
+	os.Exit(run(os.Args, os.Stdout))
+}
+
+func run(args []string, out io.Writer) int {
+	if isVersionRequest(args) {
+		fmt.Fprintln(out, currentVersion())
+		return 0
 	}
 
-	action := os.Args[1]
-	args := os.Args[2:]
+	if len(args) < 2 {
+		fmt.Fprintln(out, "Usage: ./migration [action] {...args}")
+		return 1
+	}
+
+	action := args[1]
+	cmdArgs := args[2:]
 
 	var cmd cli.Command
 	switch action {
@@ -24,14 +35,30 @@ func main() {
 	case "migrate":
 		cmd = cli.NewMigrateCommand()
 	default:
-		fmt.Printf("Unknown action: %s\n", action)
-		os.Exit(1)
+		fmt.Fprintf(out, "Unknown action: %s\n", action)
+		return 1
 	}
 
-	if err := cmd.Execute(context.Background(), args); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	if err := cmd.Execute(context.Background(), cmdArgs); err != nil {
+		fmt.Fprintln(out, err)
+		return 1
 	}
 
-	os.Exit(0)
+	return 0
+}
+
+func isVersionRequest(args []string) bool {
+	return len(args) == 2 && (args[1] == "-v" || args[1] == "--version")
+}
+
+func currentVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "unknown"
+	}
+	if info.Main.Version == "" {
+		return "unknown"
+	}
+
+	return info.Main.Version
 }
