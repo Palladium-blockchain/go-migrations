@@ -8,18 +8,36 @@ import (
 )
 
 type Migrator struct {
-	driver migrate.Driver
-	source migrate.Source
+	driver                  migrate.Driver
+	source                  migrate.Source
+	allowOrphanedMigrations bool
+}
+
+type Option func(*Migrator)
+
+func WithAllowOrphanedMigrations() Option {
+	return func(m *Migrator) {
+		m.allowOrphanedMigrations = true
+	}
 }
 
 func NewMigrator(
 	driver migrate.Driver,
 	source migrate.Source,
+	opts ...Option,
 ) *Migrator {
-	return &Migrator{
+	m := &Migrator{
 		driver: driver,
 		source: source,
 	}
+
+	for _, opt := range opts {
+		if opt != nil {
+			opt(m)
+		}
+	}
+
+	return m
 }
 
 func (m *Migrator) Up(ctx context.Context) error {
@@ -52,6 +70,9 @@ func (m *Migrator) Up(ctx context.Context) error {
 	}
 	for _, a := range applied {
 		if _, ok := known[a]; !ok {
+			if m.allowOrphanedMigrations {
+				continue
+			}
 			return fmt.Errorf("unknown applied migration: %s", a)
 		}
 	}

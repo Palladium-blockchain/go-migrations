@@ -64,6 +64,19 @@ func main() {
 }
 ```
 
+Если в базе уже есть записи о миграциях, которых больше нет локально, и их нужно
+игнорировать при `Up`, можно явно включить это поведение:
+
+```go
+if err := migrator.NewMigrator(
+    driver,
+    source,
+    migrator.WithAllowOrphanedMigrations(),
+).Up(context.Background()); err != nil {
+    panic(err)
+}
+```
+
 ### Откат последней миграции
 
 ```go
@@ -103,10 +116,25 @@ MIGRATIONS_PATH="migrations" \
 ./migration migrate
 ```
 
+Если нужно игнорировать миграции, которые уже есть в таблице `schema_migrations`,
+но отсутствуют локально, добавьте флаг:
+
+```bash
+DATABASE_URL="postgres://user:pass@localhost:5432/dbname?sslmode=disable" \
+MIGRATIONS_PATH="migrations" \
+./migration migrate --allow-orphaned-migrations
+```
+
 Параметры окружения:
 
 - `DATABASE_URL` — строка подключения к PostgreSQL (обязательна).
 - `MIGRATIONS_PATH` — путь к директории миграций (по умолчанию `migrations`).
+
+Параметры CLI:
+
+- `--allow-orphaned-migrations` — игнорировать уже применённые миграции,
+  которых нет в локальном каталоге миграций. На `Down` это не влияет: для
+  отката локальный `down.sql` всё равно обязателен.
 
 ## Как работает хранение миграций
 

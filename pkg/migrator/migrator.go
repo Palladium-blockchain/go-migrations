@@ -6,7 +6,12 @@ import (
 )
 
 type Migrator = internalmigrator.Migrator
+type Option = internalmigrator.Option
 
-func NewMigrator(driver migrate.Driver, source migrate.Source) *Migrator {
-	return internalmigrator.NewMigrator(driver, source)
+func WithAllowOrphanedMigrations() Option {
+	return internalmigrator.WithAllowOrphanedMigrations()
+}
+
+func NewMigrator(driver migrate.Driver, source migrate.Source, opts ...Option) *Migrator {
+	return internalmigrator.NewMigrator(driver, source, opts...)
 }

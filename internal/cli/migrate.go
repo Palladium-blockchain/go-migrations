@@ -3,7 +3,9 @@ package cli
 import (
 	"context"
 	"database/sql"
+	"flag"
 	"fmt"
+	"io"
 	"os"
 
 	migratepostgres "github.com/Palladium-blockchain/go-migrations/pkg/driver/postgres"
@@ -19,7 +21,12 @@ func NewMigrateCommand() *MigrateCommand {
 	return &MigrateCommand{}
 }
 
-func (cmd *MigrateCommand) Execute(ctx context.Context, _ []string) error {
+func (cmd *MigrateCommand) Execute(ctx context.Context, args []string) error {
+	opts, err := parseMigrateCommandArgs(args)
+	if err != nil {
+		return err
+	}
+
 	// Config
 	env, err := MigrateCommandLoadEnvConfig()
 	if err != nil {
@@ -40,7 +47,12 @@ func (cmd *MigrateCommand) Execute(ctx context.Context, _ []string) error {
 	source := migratefs.NewSource(os.DirFS(env.MigrationsPath))
 
 	// Migrator
-	if err := migrator.NewMigrator(driver, source).Up(ctx); err != nil {
+	migratorOptions := make([]migrator.Option, 0, 1)
+	if opts.AllowOrphanedMigrations {
+		migratorOptions = append(migratorOptions, migrator.WithAllowOrphanedMigrations())
+	}
+
+	if err := migrator.NewMigrator(driver, source, migratorOptions...).Up(ctx); err != nil {
 		fmt.Println("Migration error:", err)
 		return err
 	}
@@ -48,6 +60,33 @@ func (cmd *MigrateCommand) Execute(ctx context.Context, _ []string) error {
 	fmt.Println("Migration done!")
 
 	return nil
+}
+
+type MigrateCommandOptions struct {
+	AllowOrphanedMigrations bool
+}
+
+func parseMigrateCommandArgs(args []string) (MigrateCommandOptions, error) {
+	var opts MigrateCommandOptions
+
+	flags := flag.NewFlagSet("migrate", flag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+	flags.BoolVar(
+		&opts.AllowOrphanedMigrations,
+		"allow-orphaned-migrations",
+		false,
+		"ignore applied migrations that are missing locally",
+	)
+
+	if err := flags.Parse(args); err != nil {
+		return opts, err
+	}
+
+	if flags.NArg() != 0 {
+		return opts, fmt.Errorf("unexpected arguments: %v", flags.Args())
+	}
+
+	return opts, nil
 }
 
 type MigrateCommandEnv struct {
